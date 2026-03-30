@@ -1,11 +1,21 @@
-import { Clock, Calendar, Video, Users } from "lucide-react";
+import { Clock, Calendar, Video, Users, PieChart as PieChartIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/Card";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { Footer } from "../components/Footer";
 
 const assignedStudents = [
   { id: 1, name: "Alex Student", grade: "10th Grade", subject: "Math" },
   { id: 2, name: "Maria Garcia", grade: "9th Grade", subject: "Science" },
 ];
+
+const progressData = [
+  { name: "Excellent", value: 45 },
+  { name: "Good", value: 30 },
+  { name: "Needs Attention", value: 25 },
+];
+
+const COLORS = ["#10b981", "#3b82f6", "#f43f5e"];
 
 export default function VolunteerDashboard() {
   return (
@@ -77,7 +87,42 @@ export default function VolunteerDashboard() {
             </div>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PieChartIcon className="h-5 w-5 text-slate-500" />
+              Student Progress Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[250px] w-full mt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={progressData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {progressData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} 
+                  />
+                  <Legend verticalAlign="bottom" height={36}/>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      <Footer />
     </div>
   );
 }
