@@ -5,6 +5,7 @@ import { useAuth } from "./hooks/useAuth";
 // Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 // Student
 import StudentDashboard from "./student/StudentDashboard";
@@ -44,6 +45,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home getDashboardPath={getDashboardPath} />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
       {/* Protected Layout Routes */}
       <Route element={<DashboardLayout />}>

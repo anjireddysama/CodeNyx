@@ -2,7 +2,6 @@ import { Clock, Calendar, Video, Users, PieChart as PieChartIcon } from "lucide-
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/Card";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import { Footer } from "../components/Footer";
 
 const assignedStudents = [
   { id: 1, name: "Alex Student", grade: "10th Grade", subject: "Math" },
@@ -122,7 +121,6 @@ export default function VolunteerDashboard() {
         </Card>
       </div>
 
-      <Footer />
     </div>
   );
 }
