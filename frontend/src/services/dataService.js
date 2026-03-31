@@ -6,7 +6,8 @@ import {
   deleteDoc, 
   doc, 
   query, 
-  where 
+  where,
+  onSnapshot
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 
@@ -71,4 +72,32 @@ export const getSessions = async (ngoId) => {
     console.error("Error fetching sessions:", error);
     throw error;
   }
+};
+
+// --- Users Service ---
+
+export const updateUser = async (uid, data) => {
+  try {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, data);
+    return data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
+
+
+export const subscribeToOnlineUsers = (role, callback) => {
+  const q = query(collection(db, "users"), where("role", "==", role));
+  
+  return onSnapshot(q, (snapshot) => {
+    const totalCount = snapshot.size;
+    const onlineCount = snapshot.docs.filter(d => d.data().isOnline === true).length;
+    callback(onlineCount, totalCount);
+  }, (error) => {
+    console.error(`Error in subscribeToOnlineUsers for ${role}:`, error);
+    callback(0, 0);
+  });
 };

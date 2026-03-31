@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Users, BookOpen, AlertCircle, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { getStudents, getVolunteers, getSessions } from "../services/dataService";
+import { getSessions, subscribeToOnlineUsers } from "../services/dataService";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/Card";
 import { Loader } from "../components/Loader";
 
@@ -10,34 +10,39 @@ export default function NGODashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState({
     students: 0,
+    onlineStudents: 0,
     volunteers: 0,
+    onlineVolunteers: 0,
     sessions: 0
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchStats() {
-      if (user?.ngoId || user?.uid) {
-        const ngoId = user.ngoId || "ngo-123";
-        try {
-          const [s, v, sess] = await Promise.all([
-            getStudents(ngoId),
-            getVolunteers(ngoId),
-            getSessions(ngoId)
-          ]);
-          setStats({
-            students: s.length,
-            volunteers: v.length,
-            sessions: sess.length
-          });
-        } catch (error) {
-          console.error("Failed to fetch dashboard stats:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
+    let unsubStudents;
+    let unsubVolunteers;
+
+    if (user?.ngoId || user?.uid) {
+      // Real-time listeners that track both registered total and online count
+      // from the actual 'users' collection (where registrations live)
+      unsubStudents = subscribeToOnlineUsers("student", (onlineCount, totalCount) => {
+        setStats(p => ({ ...p, onlineStudents: onlineCount, students: totalCount }));
+        setLoading(false);
+      });
+
+      unsubVolunteers = subscribeToOnlineUsers("volunteer", (onlineCount, totalCount) => {
+        setStats(p => ({ ...p, onlineVolunteers: onlineCount, volunteers: totalCount }));
+      });
+
+      // Fetch sessions separately
+      getSessions(user.ngoId || "ngo-123")
+        .then(sess => setStats(p => ({ ...p, sessions: sess.length })))
+        .catch(err => console.error("Failed to fetch sessions:", err));
     }
-    fetchStats();
+
+    return () => {
+      if (unsubStudents) unsubStudents();
+      if (unsubVolunteers) unsubVolunteers();
+    };
   }, [user]);
 
   if (loading) {
@@ -64,22 +69,40 @@ export default function NGODashboard() {
         <Card className="border-slate-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-500">Total Active Students</CardTitle>
-            <Users className="h-5 w-5 text-brand-600 bg-brand-50 p-1 rounded" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 shadow-sm relative">
+              <span className="absolute top-1 right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <Users className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-slate-900">{stats.students}</div>
-            <p className="text-xs text-slate-500 font-medium tracking-tight mt-1">Live from database</p>
+            <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-slate-900">{stats.onlineStudents}</div>
+              <div className="text-sm font-medium text-slate-500">/ {stats.students} registered</div>
+            </div>
+            <p className="text-xs text-slate-500 font-medium tracking-tight mt-1">Live Online Now</p>
           </CardContent>
         </Card>
         
         <Card className="border-slate-200">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-500">Total Volunteers</CardTitle>
-            <Building2 className="h-5 w-5 text-brand-600 bg-brand-50 p-1 rounded" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100 shadow-sm relative">
+              <span className="absolute top-1 right-1 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <Building2 className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-slate-900">{stats.volunteers}</div>
-            <p className="text-xs text-slate-500 font-medium tracking-tight mt-1">Active associates</p>
+            <div className="flex items-baseline gap-2">
+              <div className="text-3xl font-bold text-slate-900">{stats.onlineVolunteers}</div>
+              <div className="text-sm font-medium text-slate-500">/ {stats.volunteers} registered</div>
+            </div>
+            <p className="text-xs text-slate-500 font-medium tracking-tight mt-1">Live Online Now</p>
           </CardContent>
         </Card>
 

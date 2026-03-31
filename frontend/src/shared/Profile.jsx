@@ -21,10 +21,10 @@ export default function Profile() {
           <div className="space-y-6">
             <div className="flex items-center gap-6 pb-6 border-b border-slate-100">
               <div className="h-24 w-24 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-3xl font-bold">
-                {user.name.charAt(0)}
+                {user.displayName ? user.displayName.charAt(0) : "U"}
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">{user.name}</h2>
+                <h2 className="text-xl font-bold text-slate-900">{user.displayName || "User"}</h2>
                 <p className="text-slate-500 capitalize">{user.role} Account</p>
                 <button className="mt-2 text-sm text-brand-600 font-medium hover:text-brand-700">Change Avatar</button>
               </div>
@@ -33,7 +33,7 @@ export default function Profile() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="text-sm font-medium text-slate-700">Full Name</label>
-                <input type="text" disabled value={user.name} className="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 bg-slate-50 text-slate-600 border sm:text-sm" />
+                <input type="text" disabled value={user.displayName || ""} className="mt-1 block w-full rounded-md border-slate-300 py-2 px-3 bg-slate-50 text-slate-600 border sm:text-sm" />
               </div>
               <div>
                 <label className="text-sm font-medium text-slate-700">Email Address</label>

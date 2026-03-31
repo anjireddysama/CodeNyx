@@ -2,8 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { BookOpen, Menu, X, ArrowRight } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export default function Home({ getDashboardPath }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,12 +39,15 @@ export default function Home({ getDashboardPath }) {
             </div>
 
             {/* Desktop CTA */}
-            <div className="hidden md:flex items-center">
+            <div className="hidden md:flex items-center gap-6">
+              <div className="bg-slate-800 rounded-full px-3 py-1 scale-90">
+                <LanguageSwitcher />
+              </div>
               <button 
                 onClick={() => navigate("/login")}
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-500 hover:shadow transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
               >
-                Sign In
+                {t('nav.login')}
               </button>
             </div>
 
@@ -91,13 +97,12 @@ export default function Home({ getDashboardPath }) {
             <span className="flex h-2 w-2 rounded-full bg-brand-500 animate-pulse"></span>
             Empowering the future of education
           </div>
-          
           <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-tight mb-8 max-w-4xl mx-auto">
-            Bridge the gap in <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Learning</span>
+            {t('home.title1')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">{t('home.title2')}</span>
           </h1>
           
           <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-2xl mx-auto mb-10">
-            TraceEd is the ultimate platform connecting NGOs, dedicated volunteers, and students to build a brighter tomorrow through structured, impactful education.
+            {t('home.subtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -105,7 +110,7 @@ export default function Home({ getDashboardPath }) {
               onClick={() => navigate("/login")}
               className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-brand-200 hover:bg-brand-500 hover:shadow-brand-300 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
             >
-              Get Started
+              {t('nav.getStarted')}
               <ArrowRight className="h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
             </button>
             <button 

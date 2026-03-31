@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
 // Global user state tracker
@@ -22,6 +22,16 @@ export const useAuth = () => {
           const profile = userSnap.data();
           globalUser = profile;
           setUser(profile);
+          
+          // Mark the user as online in Firestore
+          try {
+            await updateDoc(userRef, { 
+              isOnline: true, 
+              lastActive: new Date().toISOString() 
+            });
+          } catch (err) {
+            console.error("Failed to set online status", err);
+          }
         } else {
           // No profile found (maybe admin created user)
           globalUser = null;
@@ -46,6 +56,14 @@ export const useAuth = () => {
   
   const logout = async () => {
     try {
+      if (auth.currentUser) {
+        try {
+          // Attempt to mark user offline before signing out
+          await updateDoc(doc(db, "users", auth.currentUser.uid), { isOnline: false });
+        } catch (err) {
+          console.error("Failed to set offline status", err);
+        }
+      }
       await signOut(auth);
       globalUser = null;
       setUser(null);

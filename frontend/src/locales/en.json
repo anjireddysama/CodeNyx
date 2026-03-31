@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Sign Out",
+    "login": "Sign In",
+    "getStarted": "Get Started",
+    "search": "Search resources, students..."
+  },
+  "home": {
+    "title1": "Bridge the gap in",
+    "title2": "Learning",
+    "subtitle": "TraceEd connects passionate volunteers with students who need them most. Empowering NGOs to track progress and transform lives without the heavy lifting.",
+    "cta": "Get Started Today - Free for NGOs"
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}!",
+    "progress": "Here's your latest learning progress.",
+    "attendance": "Attendance Priority",
+    "tracking": "Currently tracking at \"Green\" status",
+    "recentSessions": "Recent Sessions",
+    "sessionsMonth": "Sessions this month",
+    "completedTopics": "Completed Topics",
+    "acrossSubjects": "Across {{count}} subjects",
+    "upcoming": "Upcoming Schedule",
+    "joinCall": "Join Call"
+  }
+}
