@@ -4,7 +4,7 @@ import {
   signOut, 
   onAuthStateChanged 
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 
 // Helper to get or create a user profile in Firestore
@@ -36,12 +36,14 @@ export const signUp = async (email, password, role, fullName) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
-    // Create profile in Firestore
+    // Create profile in Firestore — mark as online immediately
     const profile = {
       uid: user.uid,
       email: user.email,
       displayName: fullName,
       role: role,
+      isOnline: true,
+      lastActive: new Date().toISOString(),
       createdAt: new Date().toISOString(),
     };
     await setDoc(doc(db, "users", user.uid), profile);
@@ -58,10 +60,14 @@ export const signIn = async (email, password) => {
     const user = userCredential.user;
     
     // Fetch profile from Firestore
-    const userSnap = await getDoc(doc(db, "users", user.uid));
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
     if (!userSnap.exists()) {
       throw new Error("User profile not found in database.");
     }
+    
+    // Mark user as online immediately
+    await updateDoc(userRef, { isOnline: true, lastActive: new Date().toISOString() });
     
     return { user: userSnap.data() };
   } catch (error) {
